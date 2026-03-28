@@ -11,10 +11,10 @@ const startServer = async () => {
     await seedDemoData();
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(` Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("❌ Server start error:", error.message);
+    console.error(" Server start error:", error.message);
     process.exit(1);
   }
 };

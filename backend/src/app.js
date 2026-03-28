@@ -27,7 +27,7 @@ app.use("/api/fines", fineRoutes);
 app.use("/api/reports", reportRoutes);
 
 app.get("/", (req, res) => {
-  res.send("🚀 Library Management API Running...");
+  res.send(" Library Management API Running...");
 });
 
 app.use(notFound);

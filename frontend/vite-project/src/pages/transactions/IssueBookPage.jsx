@@ -12,10 +12,16 @@ function IssueBookPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
     const load = async () => {
-      const data = await getItemsApi();
-      setBooks(data.filter((x) => x.itemType === "book"));
+      try {
+        const data = await getItemsApi();
+        setBooks(data.filter((x) => x.itemType === "book" && x.isAvailable));
+      } catch (err) {
+        setError("Failed to load books");
+      }
     };
     load();
   }, []);
@@ -23,19 +29,59 @@ function IssueBookPage() {
   const handleBookSelect = (e) => {
     const id = e.target.value;
     setItemId(id);
+
     const book = books.find((b) => b._id === id);
     setSelectedBook(book || null);
-  };
 
-  const today = new Date().toISOString().split("T")[0];
+    if (book) {
+      const issue = new Date();
+      const issueFormatted = issue.toISOString().split("T")[0];
+
+      const ret = new Date();
+      ret.setDate(issue.getDate() + 15);
+      const returnFormatted = ret.toISOString().split("T")[0];
+
+      setIssueDate(issueFormatted);
+      setReturnDate(returnFormatted);
+      setError("");
+      setMessage("");
+    } else {
+      setIssueDate("");
+      setReturnDate("");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
 
-    if (!itemId || !issueDate || !returnDate) {
-      setError("Please fill all required fields");
+    if (!itemId) {
+      setError("Please select a book");
+      return;
+    }
+
+    if (!issueDate) {
+      setError("Issue date is required");
+      return;
+    }
+
+    if (!returnDate) {
+      setError("Return date is required");
+      return;
+    }
+
+    if (issueDate < today) {
+      setError("Issue date cannot be less than today");
+      return;
+    }
+
+    const maxReturnDate = new Date(issueDate);
+    maxReturnDate.setDate(maxReturnDate.getDate() + 15);
+    const maxReturnFormatted = maxReturnDate.toISOString().split("T")[0];
+
+    if (returnDate > maxReturnFormatted) {
+      setError("Return date cannot be greater than 15 days from issue date");
       return;
     }
 
@@ -46,7 +92,16 @@ function IssueBookPage() {
         returnDate,
         remarks,
       });
+
       setMessage(data.message || "Book issued successfully");
+      setItemId("");
+      setSelectedBook(null);
+      setIssueDate("");
+      setReturnDate("");
+      setRemarks("");
+
+      const refreshed = await getItemsApi();
+      setBooks(refreshed.filter((x) => x.itemType === "book" && x.isAvailable));
     } catch (err) {
       setError(err?.response?.data?.message || "Issue failed");
     }
@@ -76,17 +131,30 @@ function IssueBookPage() {
 
         <div className="form-row">
           <label>Issue Date</label>
-          <input type="date" value={issueDate} min={today} onChange={(e) => setIssueDate(e.target.value)} />
+          <input
+            type="date"
+            value={issueDate}
+            min={today}
+            onChange={(e) => setIssueDate(e.target.value)}
+          />
         </div>
 
         <div className="form-row">
           <label>Return Date</label>
-          <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} />
+          <input
+            type="date"
+            value={returnDate}
+            min={issueDate || today}
+            onChange={(e) => setReturnDate(e.target.value)}
+          />
         </div>
 
         <div className="form-row">
           <label>Remarks</label>
-          <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+          <textarea
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+          />
         </div>
 
         {message && <p className="success-text">{message}</p>}

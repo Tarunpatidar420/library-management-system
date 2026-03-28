@@ -45,17 +45,23 @@ exports.issueBook = async (req, res) => {
     }
 
     const today = startOfToday();
-    const issue = new Date(issueDate);
-    const ret = new Date(returnDate);
-    const maxReturn = addDays(today, 15);
+    const issue = startOfToday(issueDate);
+    const ret = startOfToday(returnDate);
+    const maxReturn = addDays(issue, 15);
 
     if (issue < today) {
       return res.status(400).json({ message: "Issue date cannot be less than today" });
     }
 
+    if (ret < issue) {
+      return res.status(400).json({
+        message: "Return date cannot be less than issue date",
+      });
+    }
+
     if (ret > maxReturn) {
       return res.status(400).json({
-        message: "Return date cannot be greater than 15 days from today",
+        message: "Return date cannot be greater than 15 days from issue date",
       });
     }
 

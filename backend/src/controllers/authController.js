@@ -84,35 +84,6 @@ exports.login = async (req, res) => {
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
     const adminPassKeyFromEnv = process.env.ADMIN_PASS_KEY;
 
-    // Admin login: only email + passkey
-    if (normalizedEmail === adminEmail) {
-      if (!adminPassKey) {
-        return res.status(400).json({ message: "Admin pass key is required" });
-      }
-
-      if (adminPassKey !== adminPassKeyFromEnv) {
-        return res.status(401).json({ message: "Invalid admin pass key" });
-      }
-
-      const token = generateToken({
-        _id: "admin-id",
-        role: "admin",
-      });
-
-      return res.json({
-        message: "Admin login success",
-        token,
-        role: "admin",
-        user: {
-          id: "admin-id",
-          name: "Admin",
-          email: adminEmail,
-          role: "admin",
-          isActive: true,
-        },
-      });
-    }
-
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -125,6 +96,21 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password || "", user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    if (normalizedEmail === adminEmail || user.role === "admin") {
+      if (!adminPassKey) {
+        return res.status(400).json({ message: "Admin pass key is required" });
+      }
+
+      if (adminPassKey !== adminPassKeyFromEnv) {
+        return res.status(401).json({ message: "Invalid admin pass key" });
+      }
+
+      if (normalizedEmail === adminEmail && user.role !== "admin") {
+        user.role = "admin";
+        await user.save();
+      }
     }
 
     res.json({
@@ -146,16 +132,6 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    if (req.user.role === "admin" && req.user.id === "admin-id") {
-      return res.json({
-        _id: "admin-id",
-        name: "Admin",
-        email: process.env.ADMIN_EMAIL,
-        role: "admin",
-        isActive: true,
-      });
-    }
-
     const user = await User.findById(req.user.id, "-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -172,13 +148,6 @@ exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     const normalizedEmail = email.toLowerCase();
-    const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
-
-    if (normalizedEmail === adminEmail) {
-      return res.status(403).json({
-        message: "Admin password reset is not allowed through forgot password",
-      });
-    }
 
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {

@@ -36,14 +36,12 @@ import PayFinePage from "../pages/transactions/PayFinePage";
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Protected Routes */}
       <Route
         path="/"
         element={
@@ -62,7 +60,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance"
           element={
@@ -71,7 +68,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance/add-membership"
           element={
@@ -80,7 +76,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance/update-membership"
           element={
@@ -89,7 +84,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance/add-book"
           element={
@@ -98,7 +92,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance/update-book"
           element={
@@ -107,7 +100,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="admin/maintenance/user-management"
           element={
@@ -134,7 +126,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/books"
           element={
@@ -143,7 +134,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/movies"
           element={
@@ -152,7 +142,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/memberships"
           element={
@@ -161,7 +150,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/active-issues"
           element={
@@ -170,7 +158,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/overdue-returns"
           element={
@@ -179,7 +166,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="reports/pending-requests"
           element={
@@ -197,7 +183,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="transactions/book-availability"
           element={
@@ -206,7 +191,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="transactions/issue"
           element={
@@ -215,7 +199,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="transactions/return"
           element={
@@ -224,7 +207,6 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
-
         <Route
           path="transactions/pay-fine"
           element={

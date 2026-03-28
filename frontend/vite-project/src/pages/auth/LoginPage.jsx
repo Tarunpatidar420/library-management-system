@@ -37,7 +37,7 @@ function LoginPage() {
 
       const data = await login(
         formData.email,
-        isAdminEmail ? "" : formData.password,
+        formData.password,
         isAdminEmail ? formData.adminPassKey : ""
       );
 
@@ -71,28 +71,26 @@ function LoginPage() {
             />
           </div>
 
-          {!isAdminEmail && (
-            <div className="form-row">
-              <label>Password</label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={onChange}
-                  placeholder="Enter password"
-                  required
-                />
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
+          <div className="form-row">
+            <label>Password</label>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={onChange}
+                placeholder="Enter password"
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
             </div>
-          )}
+          </div>
 
           {isAdminEmail && (
             <div className="form-row">
@@ -125,7 +123,15 @@ function LoginPage() {
         </form>
 
         <div style={{ marginTop: "16px", fontSize: "14px" }}>
-          Don&apos;t have an account? <Link to="/register">Register</Link>
+          <p>
+            Don&apos;t have an account?{" "}
+            <Link to="/register">Register</Link>
+          </p>
+
+          <p style={{ marginTop: "8px" }}>
+            Forgot password?{" "}
+            <Link to="/forgot-password">Reset here</Link>
+          </p>
         </div>
       </div>
     </div>
